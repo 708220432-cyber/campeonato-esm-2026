@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campeonato – E.S. Mucoque 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;700;900&display=swap');
+
+:root {
+  --bg: #080c10;
+  --surface: #0f1720;
+  --surface2: #162030;
+  --border: #1e2d3d;
+  --accent: #00aaff;
+  --gold: #f0c040;
+  --silver: #a0b0c0;
+  --green: #22cc66;
+  --orange: #ff8800;
+  --red: #ff3344;
+  --text: #e0eaf5;
+  --muted: #5a7a9a;
+  --andebol: #e05020;
+  --futsal: #2080e0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: linear-gradient(180deg, #0a1520 0%, var(--bg) 100%);
+  border-bottom: 2px solid var(--border);
+  padding: 20px 16px 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,170,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.school-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.site-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 3px;
+  color: var(--text);
+  line-height: 1;
+}
+.site-title span { color: var(--accent); }
+.site-subtitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.sport-badges {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.sport-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+}
+.sport-badge.andebol { background: var(--andebol); color: #fff; }
+.sport-badge.futsal  { background: var(--futsal);  color: #fff; }
+.sport-badge:not(.active) { opacity: 0.45; }
+.sport-badge.active { opacity: 1; box-shadow: 0 0 16px rgba(0,170,255,0.4); }
+
+/* ── ADMIN INDICATOR ── */
+.admin-bar {
+  background: rgba(240,192,64,0.1);
+  border-bottom: 1px solid rgba(240,192,64,0.3);
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--gold);
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+}
+.admin-bar.hidden { display: none; }
+.admin-dot {
+  width: 7px; height: 7px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── NAV TABS ── */
+.nav-tabs {
+  display: flex;
+  overflow-x: auto;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  padding: 14px 18px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all .2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  text-transform: uppercase;
+}
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-tab.admin-only { color: var(--gold); }
+.nav-tab.admin-only.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── MAIN CONTENT ── */
+.main { max-width: 860px; margin: 0 auto; padding: 20px 12px 60px; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.card-header {
+  background: var(--surface2);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.card-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.card-body { padding: 16px; }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 9px 18px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all .18s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary   { background: var(--accent); color: #000; }
+.btn-primary:hover { background: #33bbff; }
+.btn-gold      { background: var(--gold); color: #000; }
+.btn-gold:hover { background: #f5d060; }
+.btn-green     { background: var(--green); color: #000; }
+.btn-green:hover { background: #44dd77; }
+.btn-orange    { background: var(--orange); color: #000; }
+.btn-red       { background: var(--red); color: #fff; }
+.btn-red:hover { background: #ff5566; }
+.btn-ghost     { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-whatsapp  { background: #25d366; color: #fff; }
+.btn-whatsapp:hover { background: #1ebe57; }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ── INPUTS ── */
+.input, .select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color .2s;
+  width: 100%;
+}
+.input:focus, .select:focus { border-color: var(--accent); }
+.input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.input-row .input { flex: 1; }
+
+/* ── TURMA CHIPS ── */
+.chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 32px;
+}
+.chip {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.chip-12  { background: rgba(0,170,255,0.15); color: var(--accent); border: 1px solid rgba(0,170,255,0.3); }
+.chip-11  { background: rgba(240,192,64,0.12); color: var(--gold);  border: 1px solid rgba(240,192,64,0.3); }
+.chip-pago    { opacity: 1; }
+.chip-parcial { opacity: 0.7; }
+.chip-rem { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0; line-height: 1; }
+.chip-rem:hover { color: var(--red); }
+
+/* ── CONTRIBUIÇÕES TABLE ── */
+.contrib-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.contrib-table th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.contrib-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(30,45,61,0.6);
+  font-size: 13px;
+  vertical-align: middle;
+}
+.contrib-table tr:hover td { background: rgba(0,170,255,0.03); }
+.val-btn-group { display: flex; gap: 4px; }
+.vbtn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.vbtn:hover { border-color: var(--accent); color: var(--text); }
+.vbtn.v500 { background: rgba(34,204,102,0.2); border-color: var(--green); color: var(--green); }
+.vbtn.v250 { background: rgba(255,136,0,0.2);  border-color: var(--orange); color: var(--orange); }
+.vbtn.v0   { background: rgba(255,51,68,0.12); border-color: rgba(255,51,68,0.4); color: var(--red); }
+
+/* ── STANDINGS TABLE ── */
+.standings-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.standings-table th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.standings-table th:first-child { text-align: left; }
+.standings-table td {
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid rgba(30,45,61,0.5);
+  vertical-align: middle;
+}
+.standings-table td:first-child { text-align: left; }
+.standings-table tr:hover td { background: rgba(0,170,255,0.04); }
+.pos-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pos-1 { background: var(--gold); color: #000; }
+.pos-2 { background: var(--silver); color: #000; }
+.pos-qual { background: rgba(34,204,102,0.2); color: var(--green); border: 1px solid var(--green); }
+.pts-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--accent);
+}
+.qual-row td { border-left: 3px solid var(--green); }
+.qual-row td:first-child { border-left: 3px solid var(--green); }
+
+/* ── GROUP DRAW ── */
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.group-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.group-card-header {
+  background: rgba(0,170,255,0.1);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+.group-team {
+  padding: 7px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(30,45,61,0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.group-team:last-child { border-bottom: none; }
+.team-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── FIXTURE / MATCH ── */
+.fixture {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.fixture-team {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  flex: 1;
+  min-width: 80px;
+}
+.fixture-team.right { text-align: right; }
+.fixture-vs {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  color: var(--muted);
+  padding: 0 4px;
+}
+.score-inputs { display: flex; align-items: center; gap: 4px; }
+.score-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  width: 44px;
+  text-align: center;
+  padding: 4px;
+  border-radius: 4px;
+  outline: none;
+}
+.score-input:focus { border-color: var(--accent); }
+.score-sep {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  color: var(--muted);
+}
+.fixture-done { border-color: rgba(34,204,102,0.3); }
+.fixture-done .fixture-team { color: var(--text); }
+
+/* ── KNOCKOUT BRACKET ── */
+.bracket-round {
+  margin-bottom: 20px;
+}
+.bracket-round-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.bracket-match {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.bracket-team {
+  padding: 9px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(30,45,61,0.6);
+  gap: 8px;
+}
+.bracket-team:last-child { border-bottom: none; }
+.bracket-team.winner { background: rgba(34,204,102,0.08); }
+.bracket-team.winner .bt-name { color: var(--green); font-weight: 700; }
+.bt-name { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; flex: 1; }
+.bt-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  outline: none;
+}
+.bt-score:focus { border-color: var(--accent); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  position: relative;
+}
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+.modal-close:hover { color: var(--red); }
+
+/* ── LOGIN ── */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.login-screen.hidden { display: none; }
+.login-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+.login-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.login-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.login-error { color: var(--red); font-size: 13px; margin-top: 8px; min-height: 18px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 10px 24px;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+  transition: transform .3s;
+  z-index: 300;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── STAT BOXES ── */
+.stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.stat-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--accent);
+  display: block;
+}
+.stat-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+.empty-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+
+/* SPORT COLOUR STRIP */
+.strip-andebol { border-left: 3px solid var(--andebol); }
+.strip-futsal  { border-left: 3px solid var(--futsal);  }
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .site-title { font-size: 28px; }
+  .groups-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* SAVE indicator */
+.save-ts { font-size: 11px; color: var(--muted); text-align: center; margin-top: 8px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN (admin) -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-title">ÁREA ADMIN</div>
+    <p class="login-sub">E.S. Mucoque — Gestão do Campeonato</p>
+    <input class="input" type="password" id="pwdInput" placeholder="Palavra-passe" style="margin-bottom:8px" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button class="btn btn-gold" style="width:100%" onclick="tryLogin()">ENTRAR</button>
+    <div class="login-error" id="loginErr"></div>
+    <hr style="border-color:var(--border);margin:20px 0">
+    <button class="btn btn-ghost" style="width:100%;font-size:12px" onclick="enterPublic()">ENTRAR COMO VISITANTE (apenas visualizar)</button>
+  </div>
+</div>
+
+<!-- SITE HEADER -->
+<header class="site-header">
+  <div class="school-name" id="hdrSchool">Escola Secundária de Mucoque</div>
+  <div class="site-title" id="hdrTitle">CAMP<span>.</span> ESCOLAR <span id="hdrYear">2026</span></div>
+  <div class="site-subtitle" id="hdrSubtitle">ANDEBOL &nbsp;·&nbsp; FUTSAL</div>
+  <div class="sport-badges" style="margin-top:12px">
+    <button class="sport-badge andebol active" id="badgeAndebol" onclick="switchSport('andebol')">🤾 ANDEBOL</button>
+    <button class="sport-badge futsal" id="badgeFutsal" onclick="switchSport('futsal')">⚽ FUTSAL</button>
+  </div>
+</header>
+
+<!-- ADMIN BAR -->
+<div class="admin-bar hidden" id="adminBar">
+  <div><span class="admin-dot"></span>MODO ADMINISTRADOR ACTIVO</div>
+  <button class="btn btn-ghost btn-sm" onclick="logout()">SAIR</button>
+</div>
+
+<!-- NAV TABS -->
+<nav class="nav-tabs" id="navTabs">
+  <button class="nav-tab active" onclick="showTab('visao')">📊 Visão Geral</button>
+  <button class="nav-tab" onclick="showTab('contribuicoes')">💰 Contribuições</button>
+  <button class="nav-tab" onclick="showTab('grupos')">🎲 Grupos</button>
+  <button class="nav-tab" onclick="showTab('resultados')">⚽ Resultados</button>
+  <button class="nav-tab" onclick="showTab('classificacao')">🏆 Classificação</button>
+  <button class="nav-tab" onclick="showTab('knockout')">⚔️ Mata-Mata</button>
+  <button class="nav-tab admin-only hidden" id="tabAdmin" onclick="showTab('admin')">⚙️ Admin</button>
+</nav>
+
+<main class="main">
+
+<!-- ══════════ VISÃO GERAL ══════════ -->
+<div class="section active" id="sec-visao">
+  <div class="stat-row" id="statsRow"></div>
+  <div class="card">
+    <div class="card-header"><div class="card-title" id="visaoSportTitle">🤾 ANDEBOL</div></div>
+    <div class="card-body">
+      <div id="visaoContent"></div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-whatsapp" onclick="copiarWhatsApp()">📋 Copiar para WhatsApp</button>
+    <button class="btn btn-gold" onclick="guardarDados()">💾 Guardar</button>
+  </div>
+  <div class="save-ts" id="saveTs"></div>
+</div>
+
+<!-- ══════════ CONTRIBUIÇÕES ══════════ -->
+<div class="section" id="sec-contribuicoes">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💰 CONTRIBUIÇÕES — <span id="contribSportLabel">ANDEBOL</span></div>
+      <span style="font-size:12px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;">500 MT / turma</span>
+    </div>
+    <div class="card-body" id="contribBody"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="guardarDados()">💾 Guardar</button>
+    <button class="btn btn-whatsapp" onclick="copiarContribWhatsApp()">📋 Copiar para WhatsApp</button>
+  </div>
+  <div class="save-ts" id="saveTs2"></div>
+</div>
+
+<!-- ══════════ GRUPOS ══════════ -->
+<div class="section" id="sec-grupos">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🎲 SORTEIO DE GRUPOS — <span id="gruposSportLabel">ANDEBOL</span></div>
+      <div class="admin-action hidden" id="gruposAdminBtns">
+        <button class="btn btn-primary btn-sm" onclick="sortearGrupos()">🎲 Sortear</button>
+      </div>
+    </div>
+    <div class="card-body" id="gruposBody">
+      <div class="empty"><span class="empty-icon">🎲</span>Execute o sorteio para formar os grupos</div>
+    </div>
+  </div>
+  <div class="card admin-action hidden" id="cardJogosGrupo">
+    <div class="card-header">
+      <div class="card-title">📅 JOGOS DOS GRUPOS</div>
+      <button class="btn btn-primary btn-sm" onclick="gerarJogosGrupos()">⚙️ Gerar Jogos</button>
+    </div>
+    <div class="card-body" id="jogosGrupoBody">
+      <div class="empty"><span class="empty-icon">📅</span>Gere os jogos após o sorteio</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RESULTADOS ══════════ -->
+<div class="section" id="sec-resultados">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">⚽ RESULTADOS — <span id="resultSportLabel">ANDEBOL</span></div>
+    </div>
+    <div class="card-body" id="resultadosBody">
+      <div class="empty"><span class="empty-icon">⚽</span>Nenhum jogo disponível. Crie os grupos primeiro.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CLASSIFICAÇÃO ══════════ -->
+<div class="section" id="sec-classificacao">
+  <div id="classifBody"></div>
+</div>
+
+<!-- ══════════ KNOCKOUT / MATA-MATA ══════════ -->
+<div class="section" id="sec-knockout">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">⚔️ MATA-MATA — <span id="knockoutSportLabel">ANDEBOL</span></div>
+      <div class="admin-action hidden" id="knockoutAdminBtns">
+        <button class="btn btn-primary btn-sm" onclick="gerarMataMata()">⚙️ Gerar Fases</button>
+      </div>
+    </div>
+    <div class="card-body" id="knockoutBody">
+      <div class="empty"><span class="empty-icon">⚔️</span>O mata-mata será gerado automaticamente após a fase de grupos</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN ══════════ -->
+<div class="section" id="sec-admin">
+  <div class="card">
+    <div class="card-header"><div class="card-title">⚙️ GERIR TURMAS — <span id="adminSportLabel">ANDEBOL</span></div></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Adicione as turmas que participam no campeonato. As turmas seleccionadas serão usadas no sorteio.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn btn-ghost btn-sm" onclick="addTurmasRapido('12',19)">+ 12ª Classe (1–19)</button>
+        <button class="btn btn-ghost btn-sm" onclick="addTurmasRapido('11',13)">+ 11ª Classe (1–13)</button>
+        <button class="btn btn-red btn-sm" onclick="limparTurmas()">🗑 Limpar Tudo</button>
+      </div>
+      <div id="adminTurmasWrap"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">🔑 CONFIGURAÇÕES</div></div>
+    <div class="card-body">
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:4px">TURMAS POR GRUPO</label>
+        <select class="select" id="turmasPorGrupo" style="width:auto">
+          <option value="4">4 turmas por grupo</option>
+          <option value="3">3 turmas por grupo</option>
+          <option value="5">5 turmas por grupo</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="guardarDados()">💾 Guardar Tudo</button>
+        <button class="btn btn-red btn-sm" onclick="resetarCampeonato()">🔄 Resetar Campeonato</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">🏷️ NOME E ANO DO CAMPEONATO</div></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Edite o nome e o ano que aparecem no cabeçalho do campeonato.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:400px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:4px">NOME DA ESCOLA</label>
+          <input class="input" id="editEscola" placeholder="Ex: Escola Secundária de Mucoque">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:4px">NOME DO CAMPEONATO</label>
+          <input class="input" id="editNome" placeholder="Ex: Campeonato Escolar">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:4px">ANO</label>
+          <input class="input" id="editAno" placeholder="Ex: 2026" style="max-width:120px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:4px">MODALIDADES (subtítulo)</label>
+          <input class="input" id="editSubtitle" placeholder="Ex: ANDEBOL · FUTSAL">
+        </div>
+        <button class="btn btn-primary" onclick="salvarCampInfo()" style="align-self:flex-start;margin-top:4px">✔ Aplicar Alterações</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">🔐 ALTERAR SENHA</div></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">A nova senha será guardada neste browser. Use-a para entrar na próxima vez.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:340px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:4px">SENHA ACTUAL</label>
+          <input class="input" type="password" id="pwdActual" placeholder="Introduza a senha actual">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:4px">NOVA SENHA</label>
+          <input class="input" type="password" id="pwdNova" placeholder="Mínimo 6 caracteres">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:4px">CONFIRMAR NOVA SENHA</label>
+          <input class="input" type="password" id="pwdConfirm" placeholder="Repita a nova senha">
+        </div>
+        <div id="pwdMsg" style="font-size:13px;min-height:18px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px"></div>
+        <button class="btn btn-gold" onclick="alterarSenha()" style="align-self:flex-start">🔐 Confirmar Alteração</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- MODAL RESULTADO -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modalTitle">LANÇAR RESULTADO</div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ Guardado!</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════════════════════
+let ADMIN_PWD = localStorage.getItem('mucoque_pwd') || 'mucoque2026';
+let isAdmin = false;
+
+let campInfo = {
+  escola: 'Escola Secundária de Mucoque',
+  nome: 'Campeonato Escolar',
+  ano: '2026',
+  subtitle: 'ANDEBOL · FUTSAL'
+};
+
+function aplicarCampInfo() {
+  document.getElementById('hdrSchool').textContent   = campInfo.escola;
+  document.getElementById('hdrSubtitle').textContent = campInfo.subtitle;
+  document.getElementById('hdrYear').textContent     = campInfo.ano;
+  // Rebuild title keeping the styled dot
+  document.getElementById('hdrTitle').innerHTML =
+    campInfo.nome.toUpperCase() + ' <span id="hdrYear">' + campInfo.ano + '</span>';
+}
+let currentSport = 'andebol';
+
+const defaultState = () => ({
+  turmas: [],
+  contribuicoes: {}, // id -> 0|250|500
+  grupos: [],        // [{nome, equipas:[]}]
+  jogosGrupo: [],    // [{id, grupo, t1, t2, g1, g2, done}]
+  knockout: {        // {oitavos, quartos, semi, final}
+    oitavos: [], quartos: [], semi: [], final: []
+  }
+});
+
+let state = {
+  andebol: defaultState(),
+  futsal: defaultState()
+};
+
+// ── Turmas base ──
+function gerarTurmasBase() {
+  const t = [];
+  for (let i=1;i<=19;i++) t.push({id:`12-${i}`, classe:'12', nome:`12ª T${i}`});
+  for (let i=1;i<=13;i++) t.push({id:`11-${i}`, classe:'11', nome:`11ª T${i}`});
+  return t;
+}
+
+// ═══════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════
+function tryLogin() {
+  const v = document.getElementById('pwdInput').value;
+  if (v === ADMIN_PWD) {
+    isAdmin = true;
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminBar').classList.remove('hidden');
+    document.getElementById('tabAdmin').classList.remove('hidden');
+    document.querySelectorAll('.admin-action').forEach(el => el.classList.remove('hidden'));
+    document.getElementById('loginErr').textContent = '';
+    initApp();
+  } else {
+    document.getElementById('loginErr').textContent = '❌ Palavra-passe incorrecta';
+  }
+}
+
+function enterPublic() {
+  isAdmin = false;
+  document.getElementById('loginScreen').classList.add('hidden');
+  initApp();
+}
+
+function logout() {
+  isAdmin = false;
+  document.getElementById('adminBar').classList.add('hidden');
+  document.getElementById('tabAdmin').classList.add('hidden');
+  document.querySelectorAll('.admin-action').forEach(el => el.classList.add('hidden'));
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('loginScreen').classList.remove('hidden');
+}
+
+function salvarCampInfo() {
+  if (!isAdmin) return;
+  const escola    = document.getElementById('editEscola').value.trim();
+  const nome      = document.getElementById('editNome').value.trim();
+  const ano       = document.getElementById('editAno').value.trim();
+  const subtitle  = document.getElementById('editSubtitle').value.trim();
+  if (escola)   campInfo.escola   = escola;
+  if (nome)     campInfo.nome     = nome;
+  if (ano)      campInfo.ano      = ano;
+  if (subtitle) campInfo.subtitle = subtitle;
+  aplicarCampInfo();
+  // Clear fields
+  ['editEscola','editNome','editAno','editSubtitle'].forEach(id => document.getElementById(id).value = '');
+  showToast('✔ Cabeçalho actualizado!');
+}
+
+function alterarSenha() {
+  if (!isAdmin) return;
+  const actual  = document.getElementById('pwdActual').value;
+  const nova    = document.getElementById('pwdNova').value;
+  const confirm = document.getElementById('pwdConfirm').value;
+  const msg     = document.getElementById('pwdMsg');
+
+  if (actual !== ADMIN_PWD) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = '❌ Senha actual incorrecta';
+    return;
+  }
+  if (nova.length < 6) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = '❌ A nova senha deve ter pelo menos 6 caracteres';
+    return;
+  }
+  if (nova !== confirm) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = '❌ As senhas não coincidem';
+    return;
+  }
+  if (nova === 'mucoque2026') {
+    msg.style.color = 'var(--orange)';
+    msg.textContent = '⚠️ Escolha uma senha diferente da predefinida';
+    return;
+  }
+
+  ADMIN_PWD = nova;
+  localStorage.setItem('mucoque_pwd', nova);
+  document.getElementById('pwdActual').value  = '';
+  document.getElementById('pwdNova').value    = '';
+  document.getElementById('pwdConfirm').value = '';
+  msg.style.color = 'var(--green)';
+  msg.textContent = '✅ Senha alterada com sucesso!';
+  setTimeout(() => { msg.textContent = ''; }, 3000);
+  showToast('🔐 Senha actualizada!');
+}
+
+// Check URL for admin param
+function checkAdminURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('admin') === ADMIN_PWD) {
+    isAdmin = true;
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminBar').classList.remove('hidden');
+    document.getElementById('tabAdmin').classList.remove('hidden');
+    document.querySelectorAll('.admin-action').forEach(el => el.classList.remove('hidden'));
+    initApp();
+    return true;
+  }
+  return false;
+}
+
+// ═══════════════════════════════════════════════
+//  INIT & PERSISTENCE
+// ═══════════════════════════════════════════════
+function initApp() {
+  carregarDados();
+  if (!state.andebol.turmas.length) state.andebol.turmas = gerarTurmasBase();
+  if (!state.futsal.turmas.length)  state.futsal.turmas  = gerarTurmasBase();
+  renderAll();
+}
+
+function guardarDados() {
+  if (!isAdmin) { showToast('⚠️ Apenas o administrador pode guardar'); return; }
+  const agora = new Date().toLocaleString('pt-MZ');
+  localStorage.setItem('mucoque_state', JSON.stringify(state));
+  localStorage.setItem('mucoque_campinfo', JSON.stringify(campInfo));
+  localStorage.setItem('mucoque_save', agora);
+  document.querySelectorAll('.save-ts').forEach(el => el.textContent = '💾 Guardado às ' + agora);
+  showToast('💾 Dados guardados!');
+}
+
+function carregarDados() {
+  const raw = localStorage.getItem('mucoque_state');
+  const ts  = localStorage.getItem('mucoque_save');
+  if (raw) {
+    try {
+      const loaded = JSON.parse(raw);
+      state.andebol = { ...defaultState(), ...loaded.andebol };
+      state.futsal  = { ...defaultState(), ...loaded.futsal  };
+    } catch(e) {}
+  }
+  if (ts) document.querySelectorAll('.save-ts').forEach(el => el.textContent = '💾 Último guardado: ' + ts);
+  const rawInfo = localStorage.getItem('mucoque_campinfo');
+  if (rawInfo) { try { campInfo = { ...campInfo, ...JSON.parse(rawInfo) }; } catch(e){} }
+  aplicarCampInfo();
+}
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+const S = () => state[currentSport];
+
+function switchSport(sport) {
+  currentSport = sport;
+  document.getElementById('badgeAndebol').classList.toggle('active', sport==='andebol');
+  document.getElementById('badgeFutsal').classList.toggle('active', sport==='futsal');
+  renderAll();
+}
+
+function showTab(id) {
+  if (id === 'admin' && !isAdmin) { showToast('⚠️ Acesso restrito ao administrador'); return; }
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  renderSection(id);
+}
+
+function renderAll() {
+  const activeSection = document.querySelector('.section.active');
+  const id = activeSection ? activeSection.id.replace('sec-','') : 'visao';
+  // update sport labels
+  ['visaoSportTitle','contribSportLabel','gruposSportLabel','resultSportLabel',
+   'knockoutSportLabel','adminSportLabel'].forEach(sid => {
+    const el = document.getElementById(sid);
+    if (el) el.textContent = currentSport === 'andebol' ? '🤾 ANDEBOL' : '⚽ FUTSAL';
+  });
+  renderSection(id);
+}
+
+function renderSection(id) {
+  switch(id) {
+    case 'visao':         renderVisao(); break;
+    case 'contribuicoes': renderContrib(); break;
+    case 'grupos':        renderGrupos(); break;
+    case 'resultados':    renderResultados(); break;
+    case 'classificacao': renderClassificacao(); break;
+    case 'knockout':      renderKnockout(); break;
+    case 'admin':         renderAdmin(); break;
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════════
+//  VISÃO GERAL
+// ═══════════════════════════════════════════════
+function renderVisao() {
+  const s = S();
+  const totalTurmas = s.turmas.length;
+  const pagaram = s.turmas.filter(t => (s.contribuicoes[t.id]||0) > 0).length;
+  const arrecadado = s.turmas.reduce((acc,t)=>acc+(s.contribuicoes[t.id]||0),0);
+  const numGrupos = s.grupos.length;
+  const jogosFeitos = s.jogosGrupo.filter(j=>j.done).length;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-box"><span class="stat-num">${totalTurmas}</span><span class="stat-lbl">Turmas</span></div>
+    <div class="stat-box"><span class="stat-num">${pagaram}</span><span class="stat-lbl">Contrib.</span></div>
+    <div class="stat-box"><span class="stat-num" style="color:var(--gold)">${arrecadado}</span><span class="stat-lbl">MT Arrec.</span></div>
+    <div class="stat-box"><span class="stat-num">${numGrupos}</span><span class="stat-lbl">Grupos</span></div>
+    <div class="stat-box"><span class="stat-num">${jogosFeitos}</span><span class="stat-lbl">Jogos</span></div>
+  `;
+
+  let html = '';
+  if (s.grupos.length) {
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">';
+    s.grupos.forEach(g => {
+      const rows = calcStandings(g.nome);
+      html += `<div class="group-card">
+        <div class="group-card-header">GRUPO ${g.nome}</div>
+        ${rows.slice(0,2).map((r,i) => `
+          <div class="group-team">
+            <span class="team-dot" style="background:${i===0?'var(--gold)':'var(--silver)'}"></span>
+            <span style="font-size:12px;flex:1">${r.nome}</span>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--accent)">${r.pts}pts</span>
+          </div>
+        `).join('')}
+      </div>`;
+    });
+    html += '</div>';
+  } else {
+    html = '<div class="empty"><span class="empty-icon">📊</span>Sorteio ainda não realizado</div>';
+  }
+  document.getElementById('visaoContent').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+//  CONTRIBUIÇÕES
+// ═══════════════════════════════════════════════
+function renderContrib() {
+  const s = S();
+  const turmas = s.turmas;
+  if (!turmas.length) {
+    document.getElementById('contribBody').innerHTML = '<div class="empty"><span class="empty-icon">📋</span>Nenhuma turma adicionada</div>';
+    return;
+  }
+
+  const arrecadado = turmas.reduce((acc,t)=>acc+(s.contribuicoes[t.id]||0),0);
+  const pagaram = turmas.filter(t=>(s.contribuicoes[t.id]||0)>0).length;
+
+  let html = `<div class="stat-row" style="margin-bottom:14px">
+    <div class="stat-box"><span class="stat-num">${pagaram}</span><span class="stat-lbl">Contribuíram</span></div>
+    <div class="stat-box"><span class="stat-num">${turmas.length-pagaram}</span><span class="stat-lbl">Pendentes</span></div>
+    <div class="stat-box"><span class="stat-num" style="color:var(--gold)">${arrecadado}</span><span class="stat-lbl">MT Total</span></div>
+  </div>`;
+
+  // Group by classe
+  ['12','11'].forEach(cls => {
+    const lista = turmas.filter(t=>t.classe===cls);
+    if (!lista.length) return;
+    html += `<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding:10px 4px 6px;border-top:1px solid var(--border)">${cls}ª CLASSE</div>`;
+    html += '<table class="contrib-table"><thead><tr><th>Turma</th><th>Estado</th>' + (isAdmin ? '<th>Alterar</th>' : '') + '</tr></thead><tbody>';
+    lista.forEach(t => {
+      const v = s.contribuicoes[t.id] || 0;
+      const label = v===500 ? '<span style="color:var(--green)">✔ 500 MT</span>' : v===250 ? '<span style="color:var(--orange)">◑ 250 MT</span>' : '<span style="color:var(--red)">⏳ Pendente</span>';
+      const adminBtns = isAdmin ? `<td><div class="val-btn-group">
+          <button class="vbtn ${v===500?'v500':''}" onclick="setContrib('${t.id}',500)">500 MT</button>
+          <button class="vbtn ${v===250?'v250':''}" onclick="setContrib('${t.id}',250)">250 MT</button>
+          <button class="vbtn ${v===0?'v0':''}" onclick="setContrib('${t.id}',0)">—</button>
+        </div></td>` : '';
+      html += `<tr>
+        <td><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700">${t.nome}</span></td>
+        <td>${label}</td>
+        ${adminBtns}
+      </tr>`;
+    });
+    html += '</tbody></table>';
+  });
+
+  document.getElementById('contribBody').innerHTML = html;
+}
+
+function setContrib(id, val) {
+  if (!isAdmin) return;
+  S().contribuicoes[id] = val;
+  renderContrib();
+  renderVisao();
+}
+
+function copiarContribWhatsApp() {
+  const s = S();
+  const sport = currentSport === 'andebol' ? '🤾 ANDEBOL' : '⚽ FUTSAL';
+  let txt = `${sport} — *CONTRIBUIÇÕES CAMPEONATO 2026*\n`;
+  txt += `E.S. Mucoque · 📅 ${new Date().toLocaleDateString('pt-MZ')}\n`;
+  txt += `━━━━━━━━━━━━━━━━━━\n\n`;
+
+  ['12','11'].forEach(cls => {
+    const lista = s.turmas.filter(t=>t.classe===cls);
+    if (!lista.length) return;
+    const pag = lista.filter(t=>(s.contribuicoes[t.id]||0)===500);
+    const par = lista.filter(t=>(s.contribuicoes[t.id]||0)===250);
+    const pen = lista.filter(t=>(s.contribuicoes[t.id]||0)===0);
+    const sub = lista.reduce((a,t)=>a+(s.contribuicoes[t.id]||0),0);
+    txt += `*${cls}ª CLASSE*\n`;
+    if (pag.length) txt += `✅ 500MT: ${pag.map(t=>t.nome).join(', ')}\n`;
+    if (par.length) txt += `◑ 250MT: ${par.map(t=>t.nome).join(', ')}\n`;
+    if (pen.length) txt += `⏳ Pendente: ${pen.map(t=>t.nome).join(', ')}\n`;
+    txt += `💵 Subtotal: ${sub} MT\n\n`;
+  });
+
+  const total = s.turmas.reduce((a,t)=>a+(s.contribuicoes[t.id]||0),0);
+  txt += `━━━━━━━━━━━━━━━━━━\n✅ *TOTAL: ${total} MT*`;
+  copiarTexto(txt);
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — TURMAS
+// ═══════════════════════════════════════════════
+function renderAdmin() {
+  if (!isAdmin) {
+    document.getElementById('adminTurmasWrap').innerHTML = '<div class="empty"><span class="empty-icon">🔒</span>Acesso restrito ao administrador</div>';
+    return;
+  }
+  // Pre-fill campInfo fields with current values
+  const fields = {editEscola: campInfo.escola, editNome: campInfo.nome, editAno: campInfo.ano, editSubtitle: campInfo.subtitle};
+  Object.entries(fields).forEach(([id, val]) => { const el = document.getElementById(id); if(el) el.placeholder = val; });
+  const s = S();
+  let html = `<div style="margin-bottom:12px">
+    <div class="input-row">
+      <select class="select" id="addClasse" style="width:auto">
+        <option value="12">12ª Classe</option>
+        <option value="11">11ª Classe</option>
+      </select>
+      <input class="input" type="number" id="addNum" placeholder="Nº da turma (ex: 5)" min="1" max="25" style="width:120px">
+      <button class="btn btn-primary btn-sm" onclick="addTurmaManual()">+ Adicionar</button>
+    </div>
+  </div>`;
+
+  html += '<div class="chips-wrap" id="turmasChips">';
+  s.turmas.forEach(t => {
+    html += `<div class="chip chip-${t.classe} chip-pago">
+      ${t.nome}
+      <button class="chip-rem" onclick="removerTurma('${t.id}')">×</button>
+    </div>`;
+  });
+  html += '</div>';
+
+  document.getElementById('adminTurmasWrap').innerHTML = html;
+}
+
+function addTurmasRapido(cls, max) {
+  const s = S();
+  for (let i=1;i<=max;i++) {
+    const id = `${cls}-${i}`;
+    if (!s.turmas.find(t=>t.id===id)) {
+      s.turmas.push({id, classe: cls, nome: `${cls}ª T${i}`});
+    }
+  }
+  renderAdmin();
+  showToast(`${max} turmas adicionadas!`);
+}
+
+function addTurmaManual() {
+  const cls = document.getElementById('addClasse').value;
+  const num = parseInt(document.getElementById('addNum').value);
+  if (!num || num<1) { showToast('⚠️ Número inválido'); return; }
+  const id = `${cls}-${num}`;
+  const s = S();
+  if (s.turmas.find(t=>t.id===id)) { showToast('Turma já existe!'); return; }
+  s.turmas.push({id, classe:cls, nome:`${cls}ª T${num}`});
+  document.getElementById('addNum').value = '';
+  renderAdmin();
+  showToast(`${cls}ª T${num} adicionada!`);
+}
+
+function removerTurma(id) {
+  const s = S();
+  s.turmas = s.turmas.filter(t=>t.id!==id);
+  renderAdmin();
+}
+
+function limparTurmas() {
+  if (!confirm('Remover todas as turmas?')) return;
+  S().turmas = [];
+  renderAdmin();
+}
+
+// ═══════════════════════════════════════════════
+//  SORTEIO GRUPOS
+// ═══════════════════════════════════════════════
+function sortearGrupos() {
+  if (!isAdmin) return;
+  const s = S();
+  // Only turmas that paid (500 or 250 MT) participate in the draw
+  const turmasParticipantes = s.turmas.filter(t => (s.contribuicoes[t.id] || 0) > 0);
+  if (turmasParticipantes.length < 4) { showToast('⚠️ Mínimo 4 turmas com pagamento para sortear'); return; }
+  const tpg = parseInt(document.getElementById('turmasPorGrupo').value) || 4;
+
+  // Shuffle only paying turmas
+  const arr = [...turmasParticipantes].sort(() => Math.random() - 0.5);
+  const letras = 'ABCDEFGHIJKLMNOP';
+  const grupos = [];
+  let gi = 0;
+  for (let i=0; i<arr.length; i+=tpg) {
+    grupos.push({ nome: letras[gi], equipas: arr.slice(i, i+tpg).map(t=>t.id) });
+    gi++;
+  }
+  s.grupos = grupos;
+  s.jogosGrupo = [];
+  s.knockout = { oitavos:[], quartos:[], semi:[], final:[] };
+  renderGrupos();
+  showToast('🎲 Sorteio realizado!');
+}
+
+function gerarJogosGrupos() {
+  if (!isAdmin) return;
+  const s = S();
+  if (!s.grupos.length) { showToast('Faça o sorteio primeiro'); return; }
+  const jogos = [];
+  let jid = 0;
+  s.grupos.forEach(g => {
+    const eq = g.equipas;
+    for (let i=0;i<eq.length;i++) {
+      for (let j=i+1;j<eq.length;j++) {
+        jogos.push({ id: jid++, grupo: g.nome, t1: eq[i], t2: eq[j], g1: null, g2: null, done: false });
+      }
+    }
+  });
+  s.jogosGrupo = jogos;
+  renderGrupos();
+  renderResultados();
+  showToast('📅 Jogos gerados!');
+}
+
+function getTurma(id) {
+  return S().turmas.find(t=>t.id===id) || { nome: id };
+}
+
+function renderGrupos() {
+  const s = S();
+  if (!s.grupos.length) {
+    const pagantes = s.turmas.filter(t => (s.contribuicoes[t.id] || 0) > 0).length;
+    const msg = pagantes > 0
+      ? `<span class="empty-icon">🎲</span>Execute o sorteio — <strong style="color:var(--green)">${pagantes} turmas com pagamento</strong> serão sorteadas`
+      : `<span class="empty-icon">🎲</span>Nenhuma turma efectuou pagamento ainda`;
+    document.getElementById('gruposBody').innerHTML = `<div class="empty">${msg}</div>`;
+    return;
+  }
+
+  const colours = ['#e05020','#2080e0','#22cc66','#f0c040','#aa44ff','#ff8800','#00cccc','#ff4488'];
+  let html = '<div class="groups-grid">';
+  s.grupos.forEach((g, gi) => {
+    html += `<div class="group-card">
+      <div class="group-card-header">GRUPO ${g.nome}</div>`;
+    g.equipas.forEach((tid, ti) => {
+      const t = getTurma(tid);
+      html += `<div class="group-team">
+        <span class="team-dot" style="background:${colours[ti%colours.length]}"></span>
+        ${t.nome}
+      </div>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('gruposBody').innerHTML = html;
+
+  if (isAdmin) {
+    document.getElementById('cardJogosGrupo').classList.remove('hidden');
+    if (s.jogosGrupo.length) {
+      let jhtml = '';
+      s.grupos.forEach(g => {
+        const jogos = s.jogosGrupo.filter(j=>j.grupo===g.nome);
+        if (!jogos.length) return;
+        jhtml += `<div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--accent);padding:10px 0 6px">GRUPO ${g.nome}</div>`;
+        jogos.forEach(j => {
+          const t1 = getTurma(j.t1);
+          const t2 = getTurma(j.t2);
+          jhtml += `<div class="fixture ${j.done?'fixture-done':''}">
+            <div class="fixture-team">${t1.nome}</div>
+            <div class="score-inputs">
+              <input class="score-input" type="number" min="0" value="${j.g1!==null?j.g1:''}"
+                onchange="updateJogo(${j.id},'g1',this.value)" placeholder="–">
+              <div class="score-sep">:</div>
+              <input class="score-input" type="number" min="0" value="${j.g2!==null?j.g2:''}"
+                onchange="updateJogo(${j.id},'g2',this.value)" placeholder="–">
+            </div>
+            <div class="fixture-team right">${t2.nome}</div>
+          </div>`;
+        });
+      });
+      document.getElementById('jogosGrupoBody').innerHTML = jhtml;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  RESULTADOS
+// ═══════════════════════════════════════════════
+function renderResultados() {
+  const s = S();
+  if (!s.jogosGrupo.length) {
+    document.getElementById('resultadosBody').innerHTML = '<div class="empty"><span class="empty-icon">⚽</span>Nenhum jogo disponível. Crie os grupos e gere os jogos.</div>';
+    return;
+  }
+
+  let html = '';
+  s.grupos.forEach(g => {
+    const jogos = s.jogosGrupo.filter(j=>j.grupo===g.nome);
+    html += `<div style="margin-bottom:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:8px">GRUPO ${g.nome}</div>`;
+    jogos.forEach(j => {
+      const t1 = getTurma(j.t1);
+      const t2 = getTurma(j.t2);
+      if (isAdmin) {
+        html += `<div class="fixture ${j.done?'fixture-done':''}">
+          <div class="fixture-team">${t1.nome}</div>
+          <div class="score-inputs">
+            <input class="score-input" type="number" min="0" value="${j.g1!==null?j.g1:''}"
+              onchange="updateJogo(${j.id},'g1',this.value)" placeholder="–">
+            <div class="score-sep">:</div>
+            <input class="score-input" type="number" min="0" value="${j.g2!==null?j.g2:''}"
+              onchange="updateJogo(${j.id},'g2',this.value)" placeholder="–">
+          </div>
+          <div class="fixture-team right">${t2.nome}</div>
+          <button class="btn btn-green btn-sm" onclick="marcarFinalizado(${j.id})">✔</button>
+        </div>`;
+      } else {
+        const s1 = j.g1!==null ? j.g1 : '–';
+        const s2 = j.g2!==null ? j.g2 : '–';
+        html += `<div class="fixture ${j.done?'fixture-done':''}">
+          <div class="fixture-team">${t1.nome}</div>
+          <div class="score-inputs">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;min-width:28px;text-align:center">${s1}</div>
+            <div class="score-sep">:</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;min-width:28px;text-align:center">${s2}</div>
+          </div>
+          <div class="fixture-team right">${t2.nome}</div>
+        </div>`;
+      }
+    });
+    html += '</div>';
+  });
+  document.getElementById('resultadosBody').innerHTML = html;
+}
+
+function updateJogo(id, campo, val) {
+  if (!isAdmin) return;
+  const s = S();
+  const j = s.jogosGrupo.find(x=>x.id===id);
+  if (j) {
+    j[campo] = val === '' ? null : parseInt(val);
+    if (j.g1!==null && j.g2!==null) j.done = true;
+    renderClassificacao();
+  }
+}
+
+function marcarFinalizado(id) {
+  if (!isAdmin) return;
+  const s = S();
+  const j = s.jogosGrupo.find(x=>x.id===id);
+  if (j && j.g1!==null && j.g2!==null) {
+    j.done = true;
+    renderResultados();
+    renderClassificacao();
+    showToast('✔ Resultado guardado!');
+  } else {
+    showToast('⚠️ Introduza os golos primeiro');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  CLASSIFICAÇÃO
+// ═══════════════════════════════════════════════
+function calcStandings(grupoNome) {
+  const s = S();
+  const grupo = s.grupos.find(g=>g.nome===grupoNome);
+  if (!grupo) return [];
+  const rows = {};
+  grupo.equipas.forEach(id => {
+    rows[id] = { id, nome: getTurma(id).nome, j:0, v:0, e:0, d:0, gm:0, gs:0, pts:0 };
+  });
+  s.jogosGrupo.filter(j=>j.grupo===grupoNome && j.done).forEach(j => {
+    const r1 = rows[j.t1], r2 = rows[j.t2];
+    if (!r1||!r2) return;
+    r1.j++; r2.j++;
+    r1.gm += j.g1; r1.gs += j.g2;
+    r2.gm += j.g2; r2.gs += j.g1;
+    if (j.g1 > j.g2)      { r1.v++; r1.pts+=3; r2.d++; }
+    else if (j.g1 < j.g2) { r2.v++; r2.pts+=3; r1.d++; }
+    else                   { r1.e++; r1.pts+=1; r2.e++; r2.pts+=1; }
+  });
+  return Object.values(rows).sort((a,b) => b.pts-a.pts || (b.gm-b.gs)-(a.gm-a.gs) || b.gm-a.gm);
+}
+
+function renderClassificacao() {
+  const s = S();
+  if (!s.grupos.length) {
+    document.getElementById('classifBody').innerHTML = '<div class="empty"><span class="empty-icon">🏆</span>Classificação disponível após o sorteio</div>';
+    return;
+  }
+  let html = '';
+  s.grupos.forEach(g => {
+    const rows = calcStandings(g.nome);
+    html += `<div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title">GRUPO ${g.nome}</div></div>
+      <div style="overflow-x:auto">
+      <table class="standings-table">
+        <thead><tr>
+          <th>#</th><th style="text-align:left">Equipa</th>
+          <th>J</th><th>V</th><th>E</th><th>D</th>
+          <th>GM</th><th>GS</th><th>DG</th><th>PTS</th>
+        </tr></thead>
+        <tbody>`;
+    rows.forEach((r,i) => {
+      const qual = i < 2;
+      html += `<tr ${qual?'class="qual-row"':''}>
+        <td><span class="pos-badge ${i===0?'pos-1':i===1?'pos-2':qual?'pos-qual':''}">${i+1}</span></td>
+        <td><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700">${r.nome}</span></td>
+        <td>${r.j}</td><td>${r.v}</td><td>${r.e}</td><td>${r.d}</td>
+        <td>${r.gm}</td><td>${r.gs}</td><td>${r.gm-r.gs}</td>
+        <td><span class="pts-badge">${r.pts}</span></td>
+      </tr>`;
+    });
+    html += '</tbody></table></div></div>';
+  });
+
+  // Legend
+  html += `<div style="font-size:11px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:8px 0">
+    <span style="color:var(--green)">■</span> Qualificam para o mata-mata (Top 2 de cada grupo) &nbsp;·&nbsp; 
+    V=Vitória(3pts) E=Empate(1pt) D=Derrota(0pts)
+  </div>`;
+
+  document.getElementById('classifBody').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+//  MATA-MATA (KNOCKOUT)
+// ═══════════════════════════════════════════════
+function gerarMataMata() {
+  if (!isAdmin) return;
+  const s = S();
+  if (!s.grupos.length) { showToast('⚠️ Crie os grupos primeiro'); return; }
+
+  // Collect top 2 from each group
+  const qualificados = [];
+  s.grupos.forEach(g => {
+    const rows = calcStandings(g.nome);
+    qualificados.push(...rows.slice(0,2));
+  });
+
+  if (qualificados.length < 4) { showToast('⚠️ Poucos qualificados'); return; }
+
+  // Determine phase based on number of qualificados
+  const n = qualificados.length;
+  const makeMatch = (t1,t2) => ({ t1: t1?.id||null, t2: t2?.id||null, g1:null, g2:null, done:false, winner:null });
+
+  if (n >= 16) {
+    // Oitavos
+    const oit = [];
+    for (let i=0;i<16;i+=2) oit.push(makeMatch(qualificados[i],qualificados[i+1]));
+    s.knockout.oitavos = oit;
+    s.knockout.quartos = Array(8).fill(null).map(()=>makeMatch(null,null));
+    s.knockout.semi    = Array(4).fill(null).map(()=>makeMatch(null,null));
+    s.knockout.final   = [makeMatch(null,null)];
+  } else if (n >= 8) {
+    s.knockout.oitavos = [];
+    const qrt = [];
+    for (let i=0;i<8;i+=2) qrt.push(makeMatch(qualificados[i],qualificados[i+1]));
+    s.knockout.quartos = qrt;
+    s.knockout.semi    = Array(2).fill(null).map(()=>makeMatch(null,null));
+    s.knockout.final   = [makeMatch(null,null)];
+  } else if (n >= 4) {
+    s.knockout.oitavos = [];
+    s.knockout.quartos = [];
+    const semi = [];
+    for (let i=0;i<4;i+=2) semi.push(makeMatch(qualificados[i],qualificados[i+1]));
+    s.knockout.semi  = semi;
+    s.knockout.final = [makeMatch(null,null)];
+  }
+
+  renderKnockout();
+  showToast('⚔️ Mata-mata gerado!');
+}
+
+function renderKnockout() {
+  const s = S();
+  const ko = s.knockout;
+  const allEmpty = !ko.oitavos.length && !ko.quartos.length && !ko.semi.length && !ko.final.length;
+  if (allEmpty) {
+    document.getElementById('knockoutBody').innerHTML = '<div class="empty"><span class="empty-icon">⚔️</span>O mata-mata será gerado automaticamente após a fase de grupos</div>';
+    return;
+  }
+
+  let html = '';
+  const phases = [
+    { key:'oitavos', label:'OITAVOS DE FINAL', matches: ko.oitavos },
+    { key:'quartos', label:'QUARTOS DE FINAL',  matches: ko.quartos },
+    { key:'semi',    label:'MEIAS-FINAIS',       matches: ko.semi   },
+    { key:'final',   label:'GRANDE FINAL 🏆',    matches: ko.final  },
+  ];
+
+  phases.forEach(ph => {
+    if (!ph.matches || !ph.matches.length) return;
+    html += `<div class="bracket-round">
+      <div class="bracket-round-title">${ph.label}</div>`;
+      ph.matches.forEach((m, mi) => {
+        const n1 = m.t1 ? getTurma(m.t1).nome : 'A definir';
+        const n2 = m.t2 ? getTurma(m.t2).nome : 'A definir';
+        if (isAdmin) {
+          html += `<div class="bracket-match">
+            <div class="bracket-team ${m.winner===m.t1?'winner':''}">
+              <span class="bt-name">${n1}</span>
+              <input class="bt-score" type="number" min="0" value="${m.g1!==null?m.g1:''}" placeholder="–"
+                onchange="updateKO('${ph.key}',${mi},'g1',this.value)">
+            </div>
+            <div class="bracket-team ${m.winner===m.t2?'winner':''}">
+              <span class="bt-name">${n2}</span>
+              <input class="bt-score" type="number" min="0" value="${m.g2!==null?m.g2:''}" placeholder="–"
+                onchange="updateKO('${ph.key}',${mi},'g2',this.value)">
+            </div>
+            ${m.t1 && m.t2 ? `<div style="padding:6px 14px;border-top:1px solid var(--border)">
+              <button class="btn btn-green btn-sm" onclick="finalizarKO('${ph.key}',${mi})">✔ Finalizar</button>
+            </div>` : ''}
+          </div>`;
+        } else {
+          const s1 = m.g1!==null ? m.g1 : '–';
+          const s2 = m.g2!==null ? m.g2 : '–';
+          html += `<div class="bracket-match">
+            <div class="bracket-team ${m.winner===m.t1?'winner':''}">
+              <span class="bt-name">${n1}</span>
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;min-width:28px;text-align:center;color:var(--accent)">${s1}</span>
+            </div>
+            <div class="bracket-team ${m.winner===m.t2?'winner':''}">
+              <span class="bt-name">${n2}</span>
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;min-width:28px;text-align:center;color:var(--accent)">${s2}</span>
+            </div>
+          </div>`;
+        }
+      });
+    html += '</div>';
+  });
+
+  document.getElementById('knockoutBody').innerHTML = html;
+}
+
+function updateKO(fase, idx, campo, val) {
+  if (!isAdmin) return;
+  const m = S().knockout[fase][idx];
+  if (m) m[campo] = val===''?null:parseInt(val);
+}
+
+function finalizarKO(fase, idx) {
+  if (!isAdmin) return;
+  const s = S();
+  const m = s.knockout[fase][idx];
+  if (!m || m.g1===null || m.g2===null) { showToast('⚠️ Introduza os golos'); return; }
+  m.done = true;
+  m.winner = m.g1 >= m.g2 ? m.t1 : m.t2; // em caso de empate, avança t1 (desempate a definir)
+
+  // Advance winner to next round
+  const nexts = { oitavos:'quartos', quartos:'semi', semi:'final' };
+  const nextFase = nexts[fase];
+  if (nextFase) {
+    const nextMatches = s.knockout[nextFase];
+    const slot = Math.floor(idx/2);
+    const isFirst = idx%2===0;
+    if (nextMatches[slot]) {
+      if (isFirst) nextMatches[slot].t1 = m.winner;
+      else         nextMatches[slot].t2 = m.winner;
+    }
+  }
+
+  renderKnockout();
+  showToast('✔ Resultado guardado!');
+}
+
+// ═══════════════════════════════════════════════
+//  WHATSAPP GERAL
+// ═══════════════════════════════════════════════
+function copiarWhatsApp() {
+  const s = S();
+  const sport = currentSport==='andebol'?'🤾 ANDEBOL':'⚽ FUTSAL';
+  let txt = `${sport} — *CAMPEONATO E.S. MUCOQUE 2026*\n`;
+  txt += `📅 ${new Date().toLocaleDateString('pt-MZ')}\n`;
+  txt += `━━━━━━━━━━━━━━━━━━\n\n`;
+
+  if (s.grupos.length) {
+    s.grupos.forEach(g => {
+      const rows = calcStandings(g.nome);
+      txt += `*GRUPO ${g.nome}*\n`;
+      rows.forEach((r,i) => {
+        const star = i<2 ? '✅' : '  ';
+        txt += `${star} ${i+1}. ${r.nome} — ${r.pts}pts (${r.v}V ${r.e}E ${r.d}D)\n`;
+      });
+      txt += '\n';
+    });
+  }
+
+  const ko = s.knockout;
+  if (ko.final.length && ko.final[0].done) {
+    const campeao = getTurma(ko.final[0].winner).nome;
+    txt += `🏆 *CAMPEÃO: ${campeao}*\n`;
+  }
+
+  txt += `━━━━━━━━━━━━━━━━━━\n💰 Contribuições: ${s.turmas.reduce((a,t)=>a+(s.contribuicoes[t.id]||0),0)} MT arrecadados`;
+  copiarTexto(txt);
+}
+
+function copiarTexto(txt) {
+  navigator.clipboard.writeText(txt).then(() => showToast('📋 Copiado para WhatsApp!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('📋 Copiado para WhatsApp!');
+  });
+}
+
+function resetarCampeonato() {
+  if (!confirm('Resetar TUDO para este desporto? Esta acção não pode ser desfeita!')) return;
+  state[currentSport] = defaultState();
+  state[currentSport].turmas = gerarTurmasBase();
+  renderAll();
+  showToast('🔄 Campeonato resetado');
+}
+
+// ═══════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════
+if (!checkAdminURL()) {
+  // Show login screen — user will decide
+}
+</script>
+</body>
+</html>
