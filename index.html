@@ -827,6 +827,29 @@ body {
       </div>
     </div>
   </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">🌐 PUBLICAR NO GITHUB PAGES</div></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.7">
+        Gera um ficheiro <strong style="color:var(--text)">index.html</strong> com todos os dados actuais embutidos.<br>
+        Faz o upload desse ficheiro no GitHub Pages para que todos vejam os dados actualizados online.
+      </p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="publicarGitHub()">🌐 Gerar HTML para GitHub Pages</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportarJSON()">📥 Exportar Dados (JSON)</button>
+        <button class="btn btn-ghost btn-sm" onclick="importarJSON()">📂 Importar Dados (JSON)</button>
+      </div>
+      <div id="github-steps" style="display:none;margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:13px;line-height:1.8">
+        <strong style="color:var(--gold)">✅ Ficheiro gerado! Próximos passos:</strong><br>
+        1. Vai a <strong>github.com/708220432-cyber/campeonato-esm-2026</strong><br>
+        2. Clica no ficheiro <strong>index.html</strong> existente<br>
+        3. Clica no ícone ✏️ (lápis) para editar<br>
+        4. Selecciona tudo (Ctrl+A) e apaga<br>
+        5. Cola o conteúdo do ficheiro descarregado (Ctrl+V)<br>
+        6. Clica <strong>Commit changes</strong> — o site fica actualizado em ~1 minuto!
+      </div>
+    </div>
+  </div>
 </div>
 
 </main>
@@ -1713,6 +1736,100 @@ function resetarCampeonato() {
   state[currentSport].turmas = gerarTurmasBase();
   renderAll();
   showToast('🔄 Campeonato resetado');
+}
+
+
+// ═══════════════════════════════════════════════
+//  PUBLICAR / EXPORTAR / IMPORTAR
+// ═══════════════════════════════════════════════
+function publicarGitHub() {
+  if (!isAdmin) return;
+  
+  // Serializar estado actual embutido no HTML
+  const estadoAtual = JSON.stringify(state);
+  const campInfoAtual = JSON.stringify(campInfo);
+  const pwdAtual = ADMIN_PWD;
+  
+  // Obter HTML completo da página
+  let html = document.documentElement.outerHTML;
+  
+  // Substituir o script de boot para incluir dados embutidos
+  const embedScript = `
+<script id="dados-embed">
+(function(){
+  try {
+    var s = ${estadoAtual};
+    var c = ${campInfoAtual};
+    var p = '${pwdAtual}';
+    localStorage.setItem('mucoque_state', JSON.stringify(s));
+    localStorage.setItem('mucoque_campInfo', JSON.stringify(c));
+    localStorage.setItem('mucoque_pwd', p);
+  } catch(e) {}
+})();
+<\/script>`;
+
+  // Inserir script de embed antes do </head>
+  html = html.replace('</head>', embedScript + '</head>');
+  
+  const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'index.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  // Mostrar instruções
+  document.getElementById('github-steps').style.display = 'block';
+  showToast('✅ Ficheiro index.html gerado! Faz o upload no GitHub.');
+}
+
+function exportarJSON() {
+  if (!isAdmin) { showToast('⚠️ Apenas administradores'); return; }
+  const dados = {
+    versao: '1.0',
+    exportado: new Date().toLocaleString('pt'),
+    campInfo: campInfo,
+    state: state
+  };
+  const blob = new Blob([JSON.stringify(dados, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dados_campeonato_esm_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 Dados exportados com sucesso!');
+}
+
+function importarJSON() {
+  if (!isAdmin) { showToast('⚠️ Apenas administradores'); return; }
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = '.json';
+  inp.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (!d.state) { showToast('⚠️ Ficheiro inválido'); return; }
+        state = d.state;
+        if (d.campInfo) {
+          campInfo = d.campInfo;
+          aplicarCampInfo();
+        }
+        guardarDados();
+        renderAll();
+        showToast('✅ Dados importados com sucesso!');
+      } catch(err) {
+        showToast('⚠️ Erro ao ler ficheiro');
+      }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
 }
 
 // ═══════════════════════════════════════════════
